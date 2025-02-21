@@ -29,3 +29,16 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     throw new ApiError(500, "Error decoding Token!");
   }
 });
+
+
+export const verifyAdmin = asyncHandler(async (req, _ , next) => {
+  const { role } = req.user; 
+
+  if (role !== "admin") {
+    throw new ApiError(403, "Access denied. Admins only!");
+  }
+
+  next(); 
+});
+
+export default verifyAdmin;
