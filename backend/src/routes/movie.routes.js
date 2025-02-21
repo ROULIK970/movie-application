@@ -13,7 +13,7 @@ const router = Router();
 
 
 //secured routes
-router.route("/get-movies").post(verifyJWT, getAllMovies);
+router.route("/get-movies").get(verifyJWT, getAllMovies);
 router.route("/sort-movies").post(verifyJWT, getSortedMovies);
 router.route("/search-movies").post(verifyJWT, searchMovies);
 

@@ -1,10 +1,10 @@
-import asyncHandler from "express-async-handler";
-import ApiResponse from "../utils/ApiResponse.js";
-import ApiError from "../utils/ApiError.js";
-import Movie from "../models/movie.model.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
+import {ApiResponse} from "../utils/ApiResponse.js";
+import {ApiError} from "../utils/ApiError.js";
+import {Movie} from "../models/movie.model.js";
 
 // Retrieve all movies with pagination
-export const getAllMovies = asyncHandler(async (req, res) => {
+const getAllMovies = asyncHandler(async (req, res) => {
 
 
    const { page = 1, limit = 10 } = req.query;
@@ -29,7 +29,7 @@ export const getAllMovies = asyncHandler(async (req, res) => {
 });
 
 // Get sorted movies by name, rating, release date, or duration
-export const getSortedMovies = asyncHandler(async (req, res) => {
+const getSortedMovies = asyncHandler(async (req, res) => {
     const { sortBy = "name", order = "asc", page = 1, limit = 10 } = req.query;
 
     const sortOptions = {
@@ -61,7 +61,7 @@ export const getSortedMovies = asyncHandler(async (req, res) => {
 
 
 // Search movies by name or description
-export const searchMovies = asyncHandler(async (req, res) => {
+const searchMovies = asyncHandler(async (req, res) => {
   const { query = "", page = 1, limit = 10 } = req.query;
 
   const options = {
@@ -89,11 +89,15 @@ export const searchMovies = asyncHandler(async (req, res) => {
 });
 
 // Add a new movie (admin only)
-export const addMovie = asyncHandler(async (req, res) => {
+const addMovie = asyncHandler(async (req, res) => {
   const { name, description, rating, releaseDate, duration } = req.body;
 
-  if (!name || !description || !rating || !releaseDate || !duration) {
-    throw new ApiError(400, "All fields are required!");
+  if (
+    [name, description, rating, releaseDate, duration].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
+    throw new ApiError(400, "All fields are required");
   }
 
   const movie = await Movie.create({
@@ -110,7 +114,7 @@ export const addMovie = asyncHandler(async (req, res) => {
 });
 
 // Edit movie details (admin only)
-export const editMovie = asyncHandler(async (req, res) => {
+const editMovie = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, description, rating, releaseDate, duration } = req.body;
 
@@ -130,7 +134,7 @@ export const editMovie = asyncHandler(async (req, res) => {
 });
 
 // Delete a movie (admin only)
-export const deleteMovie = asyncHandler(async (req, res) => {
+const deleteMovie = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const movie = await Movie.findByIdAndDelete(id);
 
