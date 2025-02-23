@@ -14,17 +14,17 @@ const movieSchema = new Schema(
       trim: true,
     },
     rating: {
-      type: Number,
+      type: String,
       required: true,
       min: 0,
       max: 10,
     },
     releaseDate: {
-      type: Date,
+      type: String,
       required: true,
     },
     duration: {
-      type: Number,
+      type: String,
       required: true, 
     },
     posterUrl: {

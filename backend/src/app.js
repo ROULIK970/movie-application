@@ -7,7 +7,8 @@ const app = express();
 //allows the backend to specify which origins (domains) are allowed to access its resources.
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin:'http://localhost:5173',
+    credentials: true,
   })
 );
 

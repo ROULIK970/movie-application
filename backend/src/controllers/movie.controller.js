@@ -74,7 +74,7 @@ const searchMovies = asyncHandler(async (req, res) => {
       {
         $match: {
           $or: [
-            { name: { $regex: query, $options: "i" } },
+            { title: { $regex: query, $options: "i" } },
             { description: { $regex: query, $options: "i" } },
           ],
         },
@@ -90,24 +90,35 @@ const searchMovies = asyncHandler(async (req, res) => {
 
 // Add a new movie (admin only)
 const addMovie = asyncHandler(async (req, res) => {
-  const { name, description, rating, releaseDate, duration } = req.body;
+  const { title, description, rating, releaseDate, duration } = req.body;
 
   if (
-    [name, description, rating, releaseDate, duration].some(
+    [title, description, rating, releaseDate, duration].some(
       (field) => field?.trim() === ""
     )
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
+  const existedMovie = await Movie.findOne({
+    $or: [{ title }, { description }],
+  });
+  if (existedMovie) {
+    throw new ApiError(409, "The movie that you are trying to upload already exists!");
+  }
+
   const movie = await Movie.create({
-    name,
+    title,
     description,
     rating,
     releaseDate,
-    duration,
+    duration
   });
 
+  if (!movie) {
+    throw new ApiError(500, "Something went wrong while adding movie!");
+  }
+ 
   return res
     .status(201)
     .json(new ApiResponse(201, movie, "Movie added successfully!"));
@@ -115,14 +126,20 @@ const addMovie = asyncHandler(async (req, res) => {
 
 // Edit movie details (admin only)
 const editMovie = asyncHandler(async (req, res) => {
+  console.log("hi")
   const { id } = req.params;
-  const { name, description, rating, releaseDate, duration } = req.body;
+  const { title, description, rating, releaseDate, duration } = req.body;
+
+
+    console.log("Received ID:", id); // Log the ID received
+    console.log("Update Data:", req.body); 
 
   const movie = await Movie.findByIdAndUpdate(
     id,
-    { name, description, rating, releaseDate, duration },
+    { title, description, rating, releaseDate, duration },
     { new: true }
   );
+
 
   if (!movie) {
     throw new ApiError(404, "Movie not found!");
@@ -137,6 +154,7 @@ const editMovie = asyncHandler(async (req, res) => {
 const deleteMovie = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const movie = await Movie.findByIdAndDelete(id);
+  console.log(id)
 
   if (!movie) {
     throw new ApiError(404, "Movie not found!");
