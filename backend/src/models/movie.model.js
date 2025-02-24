@@ -14,7 +14,7 @@ const movieSchema = new Schema(
       trim: true,
     },
     rating: {
-      type: String,
+      type: Number,
       required: true,
       min: 0,
       max: 10,
